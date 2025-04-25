@@ -1,18 +1,33 @@
-## 🚀 Exécution des Tests
+## 🐳 Dockerisation
 
-### Localement
+### Prérequis
+- Docker Engine 20+
+- Docker Compose 2.2+
+
+### 🚀 Exécution
+
+**Mode simple (sans Grid)**
 ```bash
-pytest tests/ -v --html=report.html
+docker build -t arvea-tests .
+docker run --rm -v $(pwd)/reports:/app/reports arvea-tests
 ```
 
-### Via Docker (Selenium Grid)
+**Avec Selenium Grid**
 ```bash
-# Lancer les containers
-docker-compose -f docker/compose.yml up -d
+# Démarrer l'infrastructure
+docker-compose -f docker/compose.yml up -d --scale chrome=3
 
-# Exécuter les tests
-docker-compose -f docker/compose.yml run tests
+# Lancer les tests
+docker-compose -f docker/compose.yml run --rm tests pytest -n 3
 
-# Arrêter tout
+# Arrêter
 docker-compose -f docker/compose.yml down
+```
+
+### 🔧 Configuration
+Variables d'environnement disponibles :
+```env
+BROWSER=chrome|firefox
+HEADLESS=true|false
+TEST_ENV=dev|staging
 ```
